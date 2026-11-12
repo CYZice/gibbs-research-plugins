@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="940" viewBox="0 0 1600 940" role="img" aria-labelledby="title description">
+  <title id="title">Literature KB 产品发布架构图</title>
+  <desc id="description">Literature KB 以同步 API、异步任务平面和共享持久化基础为核心，接入 MinerU 与模型 Provider，构成可扩展、可追溯的文献证据库。</desc>
+  <defs>
+    <marker id="arrow-navy" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#1d426b"/></marker>
+    <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#c76518"/></marker>
+    <marker id="arrow-slate" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#66798e"/></marker>
+    <style>
+      .bg { fill: #f7f9fc; }
+      .panel { fill: #ffffff; stroke: #d9e3ed; stroke-width: 1.5; }
+      .soft-blue { fill: #eef7ff; stroke: #4a98d8; stroke-width: 1.5; }
+      .soft-green { fill: #ecf9f0; stroke: #3ea76c; stroke-width: 1.5; }
+      .soft-orange { fill: #fff5e9; stroke: #dc832f; stroke-width: 1.5; }
+      .soft-violet { fill: #f4f0ff; stroke: #8a6ddd; stroke-width: 1.5; }
+      .soft-slate { fill: #f1f5f8; stroke: #7e90a4; stroke-width: 1.5; }
+      .eyebrow { font: 700 12px Arial, 'Microsoft YaHei', sans-serif; fill: #3479b4; letter-spacing: 1.5px; }
+      .h1 { font: 700 34px Arial, 'Microsoft YaHei', sans-serif; fill: #102a46; }
+      .subtitle { font: 16px Arial, 'Microsoft YaHei', sans-serif; fill: #5a7089; }
+      .section { font: 700 18px Arial, 'Microsoft YaHei', sans-serif; fill: #152f4c; }
+      .section-note { font: 13px Arial, 'Microsoft YaHei', sans-serif; fill: #63778e; }
+      .kicker { font: 700 12px Arial, 'Microsoft YaHei', sans-serif; fill: #44637f; letter-spacing: .8px; }
+      .box-title { font: 700 16px Arial, 'Microsoft YaHei', sans-serif; fill: #152f4c; text-anchor: middle; }
+      .box-body { font: 12px Arial, 'Microsoft YaHei', sans-serif; fill: #3e5873; text-anchor: middle; }
+      .box-note { font: 11px Arial, 'Microsoft YaHei', sans-serif; fill: #60778e; text-anchor: middle; }
+      .value-title { font: 700 15px Arial, 'Microsoft YaHei', sans-serif; fill: #183653; }
+      .value-body { font: 12px Arial, 'Microsoft YaHei', sans-serif; fill: #5c7188; }
+      .small { font: 12px Arial, 'Microsoft YaHei', sans-serif; fill: #596f86; }
+      .micro { font: 11px Arial, 'Microsoft YaHei', sans-serif; fill: #667b91; }
+      .sync { fill: none; stroke: #1d426b; stroke-width: 2.2; marker-end: url(#arrow-navy); }
+      .async { fill: none; stroke: #c76518; stroke-width: 2.2; stroke-dasharray: 7 5; marker-end: url(#arrow-orange); }
+      .external { fill: none; stroke: #66798e; stroke-width: 1.8; stroke-dasharray: 4 5; marker-end: url(#arrow-slate); }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1600" height="940"/>
+  <text class="eyebrow" x="80" y="54">LITERATURE KB / RELEASE ARCHITECTURE</text>
+  <text class="h1" x="80" y="94">为检索型 Agent 构建可追溯的文献证据基础设施</text>
+  <text class="subtitle" x="80" y="124">在线检索保持轻量，重处理任务独立扩展，Evidence 与 PDF 资产始终可回源。</text>
+
+  <!-- Architecture principles -->
+  <rect class="panel" x="80" y="160" width="450" height="92" rx="10"/>
+  <circle cx="116" cy="206" r="18" fill="#dcedff"/>
+  <text x="116" y="211" style="font:700 15px Arial, 'Microsoft YaHei', sans-serif; fill:#2874b1; text-anchor:middle;">1</text>
+  <text class="value-title" x="150" y="196">在线路径与重处理解耦</text>
+  <text class="value-body" x="150" y="220">search、content 与资源下载不等待论文解析。</text>
+
+  <rect class="panel" x="575" y="160" width="450" height="92" rx="10"/>
+  <circle cx="611" cy="206" r="18" fill="#ffead4"/>
+  <text x="611" y="211" style="font:700 15px Arial, 'Microsoft YaHei', sans-serif; fill:#b45a13; text-anchor:middle;">2</text>
+  <text class="value-title" x="645" y="196">任务平面可按角色扩展</text>
+  <text class="value-body" x="645" y="220">ingest、interactive、maintenance 独立消费队列。</text>
+
+  <rect class="panel" x="1070" y="160" width="450" height="92" rx="10"/>
+  <circle cx="1106" cy="206" r="18" fill="#e8defe"/>
+  <text x="1106" y="211" style="font:700 15px Arial, 'Microsoft YaHei', sans-serif; fill:#7655c3; text-anchor:middle;">3</text>
+  <text class="value-title" x="1140" y="196">证据、索引与原始文件同源持久化</text>
+  <text class="value-body" x="1140" y="220">向量检索、Evidence 与 PDF 资产可共同核验和回源。</text>
+
+  <!-- Main architecture -->
+  <rect class="panel" x="80" y="290" width="1440" height="510" rx="14"/>
+  <text class="section" x="112" y="332">产品运行架构</text>
+  <text class="section-note" x="112" y="356">公网访问进入统一 API；异步控制平面将高耗时处理从在线请求中移出。</text>
+
+  <!-- Access -->
+  <text class="kicker" x="120" y="412">ACCESS</text>
+  <rect class="soft-blue" x="120" y="440" width="190" height="102" rx="9"/>
+  <text class="box-title" x="215" y="477">用户 / Agent / 前端</text>
+  <text class="box-body" x="215" y="502">上传、检索、阅读、任务轮询</text>
+  <text class="box-note" x="215" y="523">HTTPS + Bearer Token</text>
+
+  <!-- Platform container -->
+  <rect x="350" y="385" width="730" height="350" rx="12" fill="#fbfdff" stroke="#b8d6ef" stroke-width="1.5"/>
+  <text class="kicker" x="382" y="416">LITERATURE KB PLATFORM</text>
+
+  <rect class="soft-green" x="390" y="442" width="230" height="120" rx="9"/>
+  <text class="box-title" x="505" y="475">FastAPI 服务层</text>
+  <text class="box-body" x="505" y="501">REST / OpenAPI</text>
+  <text class="box-body" x="505" y="522">同步：检索、正文、资源、状态</text>
+  <text class="box-note" x="505" y="544">异步：process / workflow 提交</text>
+
+  <rect class="soft-orange" x="660" y="442" width="190" height="120" rx="9"/>
+  <text class="box-title" x="755" y="475">任务控制平面</text>
+  <text class="box-body" x="755" y="501">Redis + RQ Queues</text>
+  <text class="box-note" x="755" y="524">队列、重试、调度、恢复</text>
+
+  <rect class="soft-orange" x="890" y="422" width="150" height="160" rx="9"/>
+  <text class="box-title" x="965" y="454">Worker Fleet</text>
+  <text class="box-body" x="965" y="482">ingest</text>
+  <text class="box-note" x="965" y="498">解析 / Evidence / 索引</text>
+  <text class="box-body" x="965" y="522">interactive</text>
+  <text class="box-note" x="965" y="538">Pack / Grounding</text>
+  <text class="box-body" x="965" y="562">maintenance</text>
+
+  <!-- Durable foundation -->
+  <rect class="soft-violet" x="390" y="610" width="650" height="92" rx="10"/>
+  <text class="kicker" x="416" y="636">SHARED DURABLE FOUNDATION · API + WORKER</text>
+  <rect x="416" y="651" width="250" height="34" rx="6" fill="#ffffff" stroke="#c7b8ee" stroke-width="1"/>
+  <text class="box-title" x="541" y="674" style="font-size:13px;">PostgreSQL + pgvector</text>
+  <rect x="696" y="651" width="318" height="34" rx="6" fill="#ffffff" stroke="#c7b8ee" stroke-width="1"/>
+  <text class="box-title" x="855" y="674" style="font-size:13px;">共享 STORAGE_ROOT</text>
+
+  <!-- External AI capabilities -->
+  <text class="kicker" x="1130" y="412">AI CAPABILITIES</text>
+  <rect class="soft-slate" x="1130" y="442" width="280" height="76" rx="9"/>
+  <text class="box-title" x="1270" y="473">MinerU</text>
+  <text class="box-body" x="1270" y="496">由 ingest Worker 提供 PDF 解析产物</text>
+  <rect class="soft-slate" x="1130" y="548" width="280" height="110" rx="9"/>
+  <text class="box-title" x="1270" y="579">模型 Provider</text>
+  <text class="box-body" x="1270" y="603">API：Query Embedding / 可选 Rerank</text>
+  <text class="box-body" x="1270" y="627">Worker：Embedding / LLM / Vision</text>
+
+  <!-- Fixed, non-intersecting connection channels. -->
+  <path class="sync" d="M310 491 H381"/>
+  <path class="async" d="M620 502 H651"/>
+  <path class="async" d="M850 502 H881"/>
+  <path class="sync" d="M505 562 V601"/>
+  <path class="sync" d="M965 582 V601"/>
+  <path class="external" d="M1040 462 H1121"/>
+  <path class="external" d="M1040 552 H1100 V603 H1121"/>
+  <path class="external" d="M620 462 H640 V402 H1100 V586 H1121"/>
+
+  <line x1="112" y1="764" x2="1488" y2="764" stroke="#e1e8ef" stroke-width="1"/>
+  <text class="small" x="112" y="784">部署边界：仅 API 对外开放；FastAPI 与 Worker 通过同一 PostgreSQL、Redis 和共享文件挂载协作。Worker 可按角色独立横向扩展。</text>
+  <line x1="1090" y1="840" x2="1144" y2="840" class="sync"/>
+  <text class="micro" x="1158" y="844">同步请求 / 持久化访问</text>
+  <line x1="1332" y1="840" x2="1386" y2="840" class="async"/>
+  <text class="micro" x="1400" y="844">异步投递 / 消费</text>
+  <line x1="1090" y1="875" x2="1144" y2="875" class="external"/>
+  <text class="micro" x="1158" y="879">外部解析 / 模型调用</text>
+</svg>

@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Literature KB 接入指南</title>
+    <meta
+      name="description"
+      content="面向 Agent 的 Literature KB 接入指南：论文检索、证据片段、正文读取、PDF 回源、Evidence Pack、Citation Grounding 与 workflow 轮询。"
+    />
+    <link rel="stylesheet" href="./guide.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a class="brand" href="#overview" aria-label="Literature KB 接入指南">
+        <span class="brand-icon">LK</span>
+        <span>
+          <strong>接入指南</strong>
+          <small>文献库与 Agent 工具体系</small>
+        </span>
+      </a>
+
+      <nav class="side-nav" aria-label="文档导航">
+        <a href="#overview" class="top-link">概览</a>
+        <p>产品</p>
+        <details open>
+          <summary>Literature KB</summary>
+          <a href="#quickstart">概览 · 快速开始</a>
+          <a href="#batch-harvest">批量采集与入库</a>
+          <a href="#tools">API 工具 · 8</a>
+          <a href="#tool-papers">papers/search</a>
+          <a href="#tool-evidence">evidence/search</a>
+          <a href="#tool-content">content</a>
+          <a href="#tool-source">source</a>
+          <a href="#tool-assets">assets</a>
+          <a href="#tool-pack">evidence/packs</a>
+          <a href="#tool-ground">citations/ground</a>
+          <a href="#tool-workflow">tasks / workflows</a>
+        </details>
+        <a href="#cookbook" class="top-link">Cookbook</a>
+        <a href="#rules" class="top-link">通用规则</a>
+        <a href="../index.html" class="console-link">打开前端控制台</a>
+      </nav>
+    </aside>
+
+    <main class="page">
+      <header class="language-switch">CN</header>
+
+      <section id="overview" class="intro">
+        <p class="breadcrumb">接入指南 / Literature KB / 概览</p>
+        <div class="product-title">
+          <span class="product-mark">LK</span>
+          <h1>Literature KB</h1>
+        </div>
+        <p class="subtitle">面向 Agent 的科研文献检索、证据核验与引用落地平台</p>
+
+        <h2>概述</h2>
+        <ul class="dot-list">
+          <li><strong>papers/search：</strong>按标题、摘要、作者、年份等条件发现论文，返回可作为 scope 的 <code>paper_id</code>。</li>
+          <li><strong>evidence/search：</strong>用自然语言检索可引用的文献片段，返回 <code>evidence_id</code>、候选正文片段和来源论文。</li>
+          <li><strong>content：</strong>按 <code>paper_id</code> 或 <code>evidence_id</code> 读取正文窗口，适合详情页展示、引用核对和长文本分批加载。</li>
+          <li><strong>source：</strong>把 evidence 回源到 PDF 页码、bbox 和 asset，适合让 Agent 给出可核验出处。</li>
+          <li><strong>assets：</strong>读取或下载论文 PDF、图片、表格、解析图等资源。</li>
+          <li><strong>evidence/packs：</strong>对显式 claims 做证据包验证，输出支持、反驳、冲突或未验证结果。</li>
+          <li><strong>citations/ground：</strong>对已有 draft 补 citation marker，并返回可验证与未验证内容。</li>
+          <li><strong>tasks / workflows：</strong>分别追踪论文处理任务和 Agent 工作流运行状态。</li>
+        </ul>
+      </section>
+
+      <section id="quickstart" class="doc-section">
+        <h2>快速开始</h2>
+        <p>
+          最短接入链路建议从检索核验开始：先发现论文，再检索 evidence，然后读取上下文和 PDF 回源。
+          只有当输入已经是显式 claims 或一段 draft 时，再进入 Evidence Pack 或 Citation Grounding。
+        </p>
+
+        <div class="quick-path">
+          <span>papers/search</span>
+          <i></i>
+          <span>evidence/search</span>
+          <i></i>
+          <span>content</span>
+          <i></i>
+          <span>source</span>
+        </div>
+
+        <div class="code-card">
+          <div class="code-head">
+            <span>curl</span>
+            <a href="../index.html">去前端体验</a>
+          </div>
+          <pre><code>curl -X POST http://127.0.0.1:8000/api/v1/evidence/search \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "evidence that retrieval improves factual accuracy",
+    "scope": { "paper_ids": ["paper_123"] },
+    "filters": {},
+    "top_k": 10,
+    "page": 1,
+    "page_size": 10
+  }'</code></pre>
+        </div>
+      </section>
+
+      <section id="batch-harvest" class="doc-section">
+        <h2>按领域批量采集并解析入库</h2>
+        <p>
+          OpenAlex Harvest 和本地 Import Pipeline 是两条连续但独立的流水线。先按
+          Domain、Field、Subfield 或 Topic 枚举并暂存 PDF，再把 staged PDF 批量送入
+          register、parse、evidence、resource_context、vectorize 和 index。
+        </p>
+
+        <div class="quick-path">
+          <span>选择 OpenAlex 分类</span>
+          <i></i>
+          <span>下载并暂存 PDF</span>
+          <i></i>
+          <span>创建 ImportBatch</span>
+          <i></i>
+          <span>解析与索引</span>
+        </div>
+
+        <div class="info-grid">
+          <div><h3>管理员准备</h3><p>在管理控制台的“OpenAlex 采集”添加并检测 API Key；确认 Harvest、maintenance 和各 Pipeline Worker 正常。</p></div>
+          <div><h3>普通成员操作</h3><p>进入左侧“批量采集”，搜索领域、选择分类、设置年份/类型/语言，预估后创建任务。</p></div>
+          <div><h3>下载完成</h3><p><code>staged</code> 只表示 PDF 已暂存。额度耗尽时任务进入 <code>waiting_quota</code>，重置后自动恢复。</p></div>
+          <div><h3>入库完成</h3><p><code>registered</code> 还不是 ready；ImportBatch 为 <code>completed</code> 且失败数为 0，才表示整批完成索引。</p></div>
+        </div>
+
+        <div class="code-card">
+          <div class="code-head"><span>固定处理阶段</span><a href="../index.html">打开批量采集</a></div>
+          <pre><code>OpenAlex taxonomy → Works → staged PDF
+staged PDF → register → parse → evidence
+           → resource_context → vectorize → index</code></pre>
+        </div>
+      </section>
+
+      <section id="tools" class="doc-section">
+        <h2>API 工具</h2>
+        <p>
+          下面按 Agent 实际调用顺序介绍稳定工具。每个工具都写明输入、输出、适用场景和最小请求示例。
+          如果只是联调，可以先在前端控制台的 Paper Library、Agent Studio 和 Developer drawer 里手动跑一遍。
+        </p>
+
+        <nav class="endpoint-tabs" aria-label="Endpoint shortcuts">
+          <a href="#tool-papers"><b>POST</b> papers/search</a>
+          <a href="#tool-evidence"><b>POST</b> evidence/search</a>
+          <a href="#tool-content"><b>GET</b> content</a>
+          <a href="#tool-source"><b>GET</b> source</a>
+          <a href="#tool-assets"><b>GET</b> assets</a>
+          <a href="#tool-pack"><b>POST</b> packs</a>
+          <a href="#tool-ground"><b>POST</b> ground</a>
+          <a href="#tool-workflow"><b>GET</b> workflows</a>
+        </nav>
+      </section>
+
+      <article id="tool-papers" class="tool-section">
+        <p class="endpoint"><span class="method post">POST</span> /api/v1/papers/search</p>
+        <h2>papers/search 论文发现与 scope 构建</h2>
+        <p class="lead">按关键词、年份、作者、DOI、处理状态等条件筛选论文，返回标题、摘要、作者、年份、资源数量和 readiness 信息。</p>
+        <div class="info-grid">
+          <div><h3>输入</h3><p><code>query</code>、<code>filters</code>、<code>sort</code>、<code>page</code>、<code>page_size</code>。</p></div>
+          <div><h3>输出</h3><p><code>items[]</code>、<code>pagination.total</code>。每个 item 至少关注 <code>paper_id</code>、<code>title</code>、<code>capabilities</code>。</p></div>
+          <div><h3>适用场景</h3><p>为检索、Pack 或 Grounding 先圈定论文范围，生成 <code>scope.paper_ids</code>。</p></div>
+          <div><h3>前端体验</h3><p>进入 Paper Library 搜索论文，勾选行即可形成 Agent Studio 的 custom scope。</p></div>
+        </div>
+        <div class="code-card">
+          <div class="code-head"><span>请求示例</span><a href="../index.html">打开 Paper Library</a></div>
+          <pre><code>{
+  "query": "graphene battery cycle stability",
+  "filters": {
+    "year_from": 2020,
+    "ai_ready": true
+  },
+  "sort": { "field": "updated_at", "order": "desc" },
+  "page": 1,
+  "page_size": 20
+}</code></pre>
+        </div>
+      </article>
+
+      <article id="tool-evidence" class="tool-section">
+        <p class="endpoint"><span class="method post">POST</span> /api/v1/evidence/search</p>
+        <h2>evidence/search 智能检索与片段返回</h2>
+        <p class="lead">用自然语言提问，返回最相关的可引用文献片段。它适合 Agent 快速找到候选证据，但命中结果还需要继续读 content 和 source。</p>
+        <div class="info-grid">
+          <div><h3>输入</h3><p><code>query</code>、可选 <code>scope.paper_ids</code> 或 <code>scope.evidence_ids</code>、<code>filters</code>、<code>top_k</code>。</p></div>
+          <div><h3>输出</h3><p><code>EvidenceHit[]</code>，重点看 <code>evidence_id</code>、<code>paper</code>、<code>quote</code>、<code>score</code>、<code>location</code>。</p></div>
+          <div><h3>适用场景</h3><p>RAG 检索、claim 支持/反驳分析、把用户问题转成候选文献证据。</p></div>
+          <div><h3>前端体验</h3><p>进入 Agent Studio，在 Search tab 输入问题并选择 Whole library 或 custom scope。</p></div>
+        </div>
+        <div class="code-card">
+          <div class="code-head"><span>请求示例</span><a href="../index.html">打开 Agent Studio</a></div>
+          <pre><code>{
+  "query": "non-flammable electrolyte for lithium metal batteries",
+  "scope": { "paper_ids": ["paper_123", "paper_456"] },
+  "filters": {},
+  "top_k": 20,
+  "page": 1,
+  "page_size": 10
+}</code></pre>
+        </div>
+      </article>
+
+      <article id="tool-content" class="tool-section">
+        <p class="endpoint"><span class="method get">GET</span> /api/v1/evidence/{evidence_id}/content</p>
+        <h2>content 正文窗口读取</h2>
+        <p class="lead">根据 evidence_id 读取命中片段周围的正文窗口，也可以用 paper content 接口读取论文 canonical content。</p>
+        <div class="info-grid">
+          <div><h3>输入</h3><p><code>evidence_id</code>，以及窗口参数 <code>before</code>、<code>after</code>。论文级读取用 <code>offset</code> 和 <code>limit</code>。</p></div>
+          <div><h3>输出</h3><p><code>EvidenceContentResponse</code>，包含命中片段、前后文、section、paper 信息和定位线索。</p></div>
+          <div><h3>适用场景</h3><p>确认 evidence 是否真的支持当前 claim，给详情页展示上下文，避免只看短 quote。</p></div>
+          <div><h3>前端体验</h3><p>Agent Studio 的搜索结果里点击 Context，即可看到同一接口返回的正文窗口。</p></div>
+        </div>
+        <div class="code-card">
+          <div class="code-head"><span>请求示例</span><a href="../index.html">打开 Context 面板</a></div>
+          <pre><code>GET /api/v1/evidence/evidence_abc/content?before=1200&after=2400</code></pre>
+        </div>
+      </article>
+
+      <article id="tool-source" class="tool-section">
+        <p class="endpoint"><span class="method get">GET</span> /api/v1/evidence/{evidence_id}/source</p>
+        <h2>source PDF 回源与定位</h2>
+        <p class="lead">把 evidence 映射回 PDF 的页码、bbox 和 asset_id，方便 Agent 给出可检查的出处。</p>
+        <div class="info-grid">
+          <div><h3>输入</h3><p><code>evidence_id</code>。</p></div>
+          <div><h3>输出</h3><p><code>EvidenceSourceResponse</code>，重点看 <code>page</code>、<code>bbox</code>、<code>asset_id</code>、<code>download_url</code>。</p></div>
+          <div><h3>适用场景</h3><p>引用核验、PDF 高亮、回答中给出页码和定位信息。</p></div>
+          <div><h3>前端体验</h3><p>Agent Studio 点击 PDF Source，可预览 PDF 并定位 evidence 来源。</p></div>
+        </div>
+        <div class="code-card">
+          <div class="code-head"><span>请求示例</span><a href="../index.html">打开 PDF Source</a></div>
+          <pre><code>GET /api/v1/evidence/evidence_abc/source</code></pre>
+        </div>
+      </article>
+
+      <article id="tool-assets" class="tool-section">
+        <p class="endpoint"><span class="method get">GET</span> /api/v1/assets/{asset_id}</p>
+        <h2>assets 论文资源浏览与下载</h2>
+        <p class="lead">读取 PDF、图片、表格、解析图等资源元数据，或下载具体文件。</p>
+        <div class="info-grid">
+          <div><h3>输入</h3><p><code>asset_id</code>；下载时调用 <code>/download</code>。</p></div>
+          <div><h3>输出</h3><p>资源类型、MIME、文件名、大小、关联论文和可下载二进制内容。</p></div>
+          <div><h3>适用场景</h3><p>展示 PDF、下载论文插图、把 figure/table 资源交给多模态 Agent。</p></div>
+          <div><h3>前端体验</h3><p>Paper Library 进入论文详情的 Assets tab，或在 Agent Studio 打开 Resource。</p></div>
+        </div>
+        <div class="code-card">
+          <div class="code-head"><span>请求示例</span><a href="../index.html">打开 Assets</a></div>
+          <pre><code>GET /api/v1/assets/asset_123
+GET /api/v1/assets/asset_123/download</code></pre>
+        </div>
+      </article>
+
+      <article id="tool-pack" class="tool-section">
+        <p class="endpoint"><span class="method post">POST</span> /api/v1/evidence/packs</p>
+        <h2>evidence/packs 显式 Claim 证据包</h2>
+        <p class="lead">对一组显式 claims 做检索、核验和证据组织，返回 workflow run。Pack 不接受“只传 evidence_ids 拼包”的旧语义。</p>
+        <div class="info-grid">
+          <div><h3>输入</h3><p><code>claims + scope + filters + top_k_per_claim</code>。</p></div>
+          <div><h3>输出</h3><p><code>WorkflowSubmissionResponse</code>，包含 <code>run_id</code>。完成后在 workflow result 中查看每条 claim 的 evidence。</p></div>
+          <div><h3>适用场景</h3><p>用户或上游 Agent 已经提出明确判断，需要验证支持、反驳、冲突或未验证。</p></div>
+          <div><h3>前端体验</h3><p>Agent Studio 的 Evidence Pack tab 可以提交 claims 并自动轮询 workflow。</p></div>
+        </div>
+        <div class="code-card">
+          <div class="code-head"><span>请求示例</span><a href="../index.html">打开 Evidence Pack</a></div>
+          <pre><code>{
+  "claims": [
+    { "text": "Non-flammable electrolytes improve lithium-metal battery safety." }
+  ],
+  "scope": { "paper_ids": ["paper_123"] },
+  "filters": {},
+  "top_k_per_claim": 5
+}</code></pre>
+        </div>
+      </article>
+
+      <article id="tool-ground" class="tool-section">
+        <p class="endpoint"><span class="method post">POST</span> /api/v1/citations/ground</p>
+        <h2>citations/ground Draft 引用落地</h2>
+        <p class="lead">对已有 draft 做 citation grounding，尽量保持原文，只补 citation marker 和验证结果。Ground 不接受调用方传入顶层 claims 或伪造 span offset。</p>
+        <div class="info-grid">
+          <div><h3>输入</h3><p><code>draft + scope + filters + top_k_per_claim</code>。</p></div>
+          <div><h3>输出</h3><p><code>run_id</code>。workflow 完成后返回 grounded draft、citations、unverified claims 和冲突证据。</p></div>
+          <div><h3>适用场景</h3><p>已有一段研究草稿，需要补引用、标出无法验证的句子，并保留可追溯证据。</p></div>
+          <div><h3>前端体验</h3><p>Agent Studio 的 Citation Grounding tab 可以直接输入 draft 并查看返回结果。</p></div>
+        </div>
+        <div class="code-card">
+          <div class="code-head"><span>请求示例</span><a href="../index.html">打开 Citation Grounding</a></div>
+          <pre><code>{
+  "draft": "Non-flammable electrolytes improve safety in lithium-metal cells.",
+  "scope": { "paper_ids": ["paper_123"] },
+  "filters": {},
+  "top_k_per_claim": 5
+}</code></pre>
+        </div>
+      </article>
+
+      <article id="tool-workflow" class="tool-section">
+        <p class="endpoint"><span class="method get">GET</span> /api/v1/workflows/{run_id}</p>
+        <h2>tasks / workflows 状态追踪</h2>
+        <p class="lead">论文处理任务和 Agent 工作流是两套状态体系。paper processing 用 task_id，Pack 和 Grounding 用 run_id。</p>
+        <div class="info-grid">
+          <div><h3>Task 输入</h3><p><code>POST /papers/{paper_id}/operations/{operation}</code>，返回 <code>task_id</code>。</p></div>
+          <div><h3>Workflow 输入</h3><p><code>POST /evidence/packs</code> 或 <code>POST /citations/ground</code>，返回 <code>run_id</code>。</p></div>
+          <div><h3>状态值</h3><p><code>queued</code>、<code>running</code>、<code>succeeded</code>、<code>failed</code>。</p></div>
+          <div><h3>前端体验</h3><p>Dashboard 追踪 task；Agent Studio 追踪 workflow run。</p></div>
+        </div>
+        <div class="code-card">
+          <div class="code-head"><span>轮询示例</span><a href="../index.html">打开控制台</a></div>
+          <pre><code>GET /api/v1/tasks/task_123
+POST /api/v1/tasks/task_123/refresh
+
+GET /api/v1/workflows/run_123</code></pre>
+        </div>
+      </article>
+
+      <section id="cookbook" class="doc-section">
+        <h2>Cookbook</h2>
+        <div class="recipe-list">
+          <article>
+            <h3>检索核验型 Agent</h3>
+            <p><code>papers/search → evidence/search → content → source</code>。适合回答“有没有文献支持这句话”。</p>
+          </article>
+          <article>
+            <h3>引用生成型 Agent</h3>
+            <p><code>evidence/packs</code> 处理 claims，<code>citations/ground</code> 处理 draft，再用 <code>workflows/{run_id}</code> 轮询。</p>
+          </article>
+          <article>
+            <h3>灌库处理型 Agent</h3>
+            <p><code>POST /papers</code> 上传 PDF，再运行 <code>parse</code>、<code>build_evidence</code>、<code>embed</code> 等 operation。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="rules" class="doc-section">
+        <h2>通用规则</h2>
+        <ul class="plain-list">
+          <li><strong>鉴权：</strong>使用 <code>Authorization: Bearer YOUR_API_TOKEN</code>。内部本地联调可按后端配置决定是否需要 token。</li>
+          <li><strong>事实源：</strong><code>/openapi.json</code> 是机器可读事实源，这个页面是人类接入说明。</li>
+          <li><strong>分页：</strong>列表接口通常使用 <code>page</code> 和 <code>page_size</code>，总数在 <code>pagination.total</code>。</li>
+          <li><strong>引用约束：</strong><code>evidence/search</code> 命中只是候选。真正用于引用前，建议继续读取 <code>content</code> 和 <code>source</code>。</li>
+          <li><strong>scope：</strong><code>scope.paper_ids</code> 控制论文边界，<code>scope.evidence_ids</code> 控制 evidence 边界。</li>
+          <li><strong>错误处理：</strong>404 多半是 ID 不存在或 task/workflow 类型混用；422 多半是请求体字段不符合当前 schema。</li>
+        </ul>
+      </section>
+    </main>
+
+    <script type="module" src="./guide.js"></script>
+  </body>
+</html>
