@@ -1,0 +1,143 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-literature_kb}
+      POSTGRES_USER: ${POSTGRES_USER:-literature}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  api:
+    build: ./backend
+    ports:
+      - "127.0.0.1:8000:8000"
+    env_file: ${APP_ENV_FILE:-.env}
+    environment:
+      APP_ENV: production
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-literature}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-literature_kb}
+      REDIS_URL: redis://redis:6379/0
+      STORAGE_ROOT: /storage
+      DISCOVERY_DOWNLOAD_ROOT: /storage/downloads
+      HTTP_PROXY: ""
+      HTTPS_PROXY: ""
+      ALL_PROXY: ""
+      http_proxy: ""
+      https_proxy: ""
+      all_proxy: ""
+      NO_PROXY: localhost,127.0.0.1,api,postgres,redis
+      no_proxy: localhost,127.0.0.1,api,postgres,redis
+    volumes:
+      - ./storage:/storage
+      - ${DISCOVERY_DOWNLOAD_HOST_PATH:-./storage/downloads}:/storage/downloads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: sh -c "alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    restart: unless-stopped
+
+  worker-ingest: &worker-service
+    build: ./backend
+    env_file: ${APP_ENV_FILE:-.env}
+    environment:
+      APP_ENV: production
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-literature}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-literature_kb}
+      REDIS_URL: redis://redis:6379/0
+      STORAGE_ROOT: /storage
+      DISCOVERY_DOWNLOAD_ROOT: /storage/downloads
+      HTTP_PROXY: ""
+      HTTPS_PROXY: ""
+      ALL_PROXY: ""
+      http_proxy: ""
+      https_proxy: ""
+      all_proxy: ""
+      NO_PROXY: localhost,127.0.0.1,api,postgres,redis
+      no_proxy: localhost,127.0.0.1,api,postgres,redis
+    volumes:
+      - ./storage:/storage
+      - ${DISCOVERY_DOWNLOAD_HOST_PATH:-./storage/downloads}:/storage/downloads
+    depends_on:
+      api:
+        condition: service_healthy
+    command: python -m app.worker --role ingest
+    restart: unless-stopped
+
+  worker-interactive:
+    <<: *worker-service
+    command: python -m app.worker --role interactive
+
+  worker-maintenance:
+    <<: *worker-service
+    command: python -m app.worker --role maintenance
+
+  worker-remote:
+    <<: *worker-service
+    command: python -m app.worker --role remote
+    deploy:
+      replicas: 2
+
+  worker-harvest:
+    <<: *worker-service
+    command: python -m app.worker --role harvest
+
+  worker-parse:
+    <<: *worker-service
+    command: python -m app.worker --role parse
+    deploy:
+      replicas: 2
+
+  worker-content:
+    <<: *worker-service
+    command: python -m app.worker --role content
+    deploy:
+      replicas: 2
+
+  worker-embedding:
+    <<: *worker-service
+    command: python -m app.worker --role embedding
+    deploy:
+      replicas: 2
+
+  worker-index:
+    <<: *worker-service
+    command: python -m app.worker --role index
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: /
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3000:3000"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:

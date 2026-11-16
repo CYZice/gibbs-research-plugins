@@ -418,12 +418,13 @@ MODULE_DEFAULT_CITATIONS: Dict[str, List[str]] = {
 # Numbered reference list (by first appearance)
 # ---------------------------------------------------------------------------
 
-def build_reference_map(keys: Iterable[str]) -> Dict[str, int]:
+def build_reference_map(keys: Iterable[str], *, allowed_keys: Optional[Iterable[str]] = None) -> Dict[str, int]:
     """Assign [1], [2], ... by first appearance; unknown keys are skipped."""
+    allowed = set(allowed_keys) if allowed_keys is not None else REFERENCE_LIBRARY
     ref_map: Dict[str, int] = {}
     n = 0
     for key in keys:
-        if key in REFERENCE_LIBRARY and key not in ref_map:
+        if key in allowed and key not in ref_map:
             n += 1
             ref_map[key] = n
     return ref_map

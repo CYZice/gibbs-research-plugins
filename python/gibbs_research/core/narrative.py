@@ -17,8 +17,8 @@ import json
 import re
 from typing import Any, Dict, List, Optional, Tuple
 
-from app.services.report_engine.citations import inline_marker, reference_entries
-from app.services.report_engine.evidence.pack import EvidencePack, pack_to_dict
+from .citations import inline_marker, reference_entries
+from .evidence.pack import EvidencePack, pack_to_dict
 
 
 CITE_RE = re.compile(r"\[\[cite:([A-Za-z0-9_]+)\]\]")
@@ -27,7 +27,7 @@ FIG_RE = re.compile(r"\[\[fig:([A-Za-z0-9_:.-]+)\]\]")
 NUM_RE = re.compile(r"-?\d+\.\d+(?:[eE][-+]?\d+)?|-?\d+[eE][-+]?\d+")
 
 
-NARRATIVE_SYSTEM_PROMPT = """你是 Gibbs 计算平台的资深研究报告撰稿人。你将拿到一份「证据包」(JSON)——里面是各计算任务的真实数值、图、方法出处与编号引文。你的任务：把它写成一份**专业、可直接交付的中文研究报告正文**（IMRaD 体例）。
+NARRATIVE_SYSTEM_PROMPT = """你是 Gibbs 科研工具的研究报告撰稿人。你将拿到一份「证据包」(JSON)——里面是用户研究材料、文献原文证据、图表、方法出处与编号引文。你的任务：把它写成一份**专业、可直接交付的中文研究报告正文**（IMRaD 体例）。
 
 【铁律 · 关进笼子】
 1. 只能使用证据包里出现的数值；**严禁**自行计算、外推、改写精度或编造任何数字。引用数值时带上单位。
@@ -80,41 +80,6 @@ def build_evidence_digest(packs: List[EvidencePack]) -> str:
 # ---------------------------------------------------------------------------
 # LLM synthesis
 # ---------------------------------------------------------------------------
-
-async def synthesize_narrative(
-    packs: List[EvidencePack],
-    *,
-    title: str,
-    template_type: str,
-    ref_map: Dict[str, int],
-) -> Dict[str, Any]:
-    """Single caged LLM call → parsed narrative dict. Raises on failure."""
-    from langchain_core.messages import HumanMessage, SystemMessage  # deferred
-
-    from app.agent.agents.llm_config import get_brain_llm  # deferred
-    from app.config import settings
-
-    temperature = float(getattr(settings, "AGENT_BRAIN_TEMPERATURE", 0.3) or 0.3)
-    llm = get_brain_llm(streaming=False, temperature=temperature, timeout=90.0)
-
-    focus = {
-        "mechanism": "侧重机理与结构-性质关系。",
-        "performance": "侧重性能指标、权衡空间与候选配方排序。",
-        "failure": "侧重失效模式诊断与风险点。",
-    }.get((template_type or "").lower(), "综合呈现方法、结果与结论。")
-
-    digest = build_evidence_digest(packs)
-    human = (
-        f"报告标题：{title}\n"
-        f"报告侧重：{focus}\n"
-        f"参考文献编号映射（KEY→编号，仅供你理解，正文请用 [[cite:KEY]]）：{json.dumps(ref_map, ensure_ascii=False)}\n\n"
-        f"证据包（JSON 数组，每个元素是一个计算任务/材料）：\n{digest}\n\n"
-        "请据此输出研究报告正文 JSON。"
-    )
-    ai = await llm.ainvoke([SystemMessage(content=NARRATIVE_SYSTEM_PROMPT), HumanMessage(content=human)])
-    text = str(getattr(ai, "content", "") or "")
-    return _parse_json_object(text)
-
 
 def _parse_json_object(text: str) -> Dict[str, Any]:
     """Extract the first top-level JSON object from an LLM reply."""
@@ -269,10 +234,10 @@ def deterministic_narrative(
 
     n = len(packs)
     abstract = (
-        f"本报告汇总了 {n} 项计算任务的结果，涵盖 {('、'.join(method_names.get(k, k) for k in by_kind))}。"
-        "下文按研究方法、结果、对比与结论分节呈现，所有数值均来自平台确定性计算。"
+        f"本报告汇总了 {n} 项研究材料，涵盖 {('、'.join(method_names.get(k, k) for k in by_kind))}。"
+        "下文按研究方法、结果、对比与结论分节呈现，数值和来源均保留在研究材料中。"
     )
-    background = "本研究围绕电解质/电极材料的关键物性展开，目标是基于一致的计算口径对候选体系进行定量评估与横向比较。"
+    background = "本报告围绕用户提供的研究问题整理证据、方法与结果。"
 
     methods = []
     for kind, group in by_kind.items():
@@ -294,8 +259,8 @@ def deterministic_narrative(
     comparison = _deterministic_comparison(packs)
     caveats = sorted({c for p in packs for c in p.caveats})
     discussion = "需要注意的前提与局限：" + "；".join(caveats) if caveats else "结果在各自方法的适用范围内成立。"
-    conclusions = ["上述结果可作为配方/材料横向比较与后续验证的统一依据。"]
-    recommendations = ["对关键候选补充更长采样或更高保真度计算以收紧不确定度。"]
+    conclusions = ["上述材料为研究比较和后续验证提供依据。"]
+    recommendations = ["对关键研究问题补充证据与验证。"]
 
     return {
         "title": title,
@@ -329,42 +294,6 @@ def _deterministic_comparison(packs: List[EvidencePack]) -> str:
 # ---------------------------------------------------------------------------
 # Orchestrator
 # ---------------------------------------------------------------------------
-
-async def generate_narrative(
-    packs: List[EvidencePack],
-    *,
-    title: str,
-    template_type: str = "mechanism",
-    ref_map: Optional[Dict[str, int]] = None,
-) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-    """Try the caged LLM; fall back to deterministic. Returns (doc, meta)."""
-    ref_map = ref_map or {}
-    meta: Dict[str, Any] = {"generated_by": "llm", "warnings": []}
-
-    llm_ok = False
-    try:
-        from app.config import settings
-        llm_ok = bool(getattr(settings, "AGENT_ENABLED", True)) and bool(getattr(settings, "LLM_API_KEY", ""))
-    except Exception:
-        llm_ok = False
-
-    if llm_ok:
-        try:
-            doc = await synthesize_narrative(packs, title=title, template_type=template_type, ref_map=ref_map)
-            doc, warnings = validate_narrative(doc, packs, ref_map)
-            meta["warnings"] = warnings
-            doc.setdefault("title", title)
-            return doc, meta
-        except Exception as exc:  # noqa: BLE001 — fall back rather than fail the report
-            meta["warnings"].append(f"LLM 综合失败，已回退确定性模板：{type(exc).__name__}")
-
-    meta["generated_by"] = "deterministic"
-    doc = deterministic_narrative(packs, title=title, template_type=template_type, ref_map=ref_map)
-    # deterministic prose only uses valid cite/fig markers, but run validation for [[cite]]→[n]
-    doc, warnings = validate_narrative(doc, packs, ref_map)
-    meta["warnings"].extend(warnings)
-    return doc, meta
-
 
 def build_reference_section(ref_map: Dict[str, int]) -> List[Dict[str, Any]]:
     """Numbered reference entries for the References block."""

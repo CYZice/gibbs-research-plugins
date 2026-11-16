@@ -1,0 +1,29 @@
+/* DSH ui-theme/design-platform palette; host tokens take precedence. */
+:root, body {
+  color-scheme: light dark;
+  font-family: var(--dsw-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif);
+  font-synthesis: none;
+  --bg: var(--dsw-alias-bg-base, #fff);
+  --sidebar: var(--dsw-specific-sidebar-fill, #f9fafb);
+  --surface: var(--dsw-alias-bg-module-platform, #f5f6f7);
+  --ink: var(--dsw-alias-label-primary, #0f1115);
+  --muted: var(--dsw-alias-label-secondary, #61666b);
+  --line: var(--dsw-alias-border-l2, rgb(0 0 0 / 10%));
+  --hover: var(--dsw-alias-interactive-bg-hover, rgb(38 49 72 / 6%));
+  --selected: var(--dsw-specific-sidebar-nav-item-active, #ebeef2);
+  --accent: var(--dsw-alias-link, #4176e6);
+  --primary: var(--dsw-alias-button-primary-fill, #0f1115);
+  --on-primary: var(--dsw-alias-label-primary-inverted, #fff);
+  --danger: var(--dsw-alias-state-error-primary, #ec1313);
+  background: var(--bg); color: var(--ink);
+}
+@media (prefers-color-scheme: dark) {
+  :root, body {
+    --bg: var(--dsw-alias-bg-base, #151517); --sidebar: var(--dsw-specific-sidebar-fill, #1b1b1c);
+    --surface: var(--dsw-alias-bg-module-platform, #353638); --ink: var(--dsw-alias-label-primary, #f9fafb);
+    --muted: var(--dsw-alias-label-secondary, #cfd3d6); --line: var(--dsw-alias-border-l2, rgb(255 255 255 / 12%));
+    --hover: var(--dsw-alias-interactive-bg-hover, rgb(255 255 255 / 8%)); --selected: var(--dsw-specific-sidebar-nav-item-active, #353638);
+    --accent: var(--dsw-alias-link, #7aaaff); --primary: var(--dsw-alias-button-primary-fill, #f9fafb);
+    --on-primary: var(--dsw-alias-label-primary-inverted, #353638); --danger: var(--dsw-alias-state-error-primary, #f25a5a);
+  }
+}

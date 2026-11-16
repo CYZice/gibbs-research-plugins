@@ -1,0 +1,56 @@
+{
+  "name": "dsh-gibbs-research",
+  "version": "0.1.0",
+  "description": "Open literature evidence, reproducible figures and cited reports for DeepSeek Harness",
+  "type": "module",
+  "main": "plugins/index.js",
+  "exports": {
+    ".": "./plugins/index.js",
+    "./literature": "./plugins/literature.js",
+    "./plot": "./plugins/plot.js",
+    "./report": "./plugins/report.js"
+  },
+  "files": [
+    "plugins",
+    "skills",
+    "cordis.patch.yml",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test tests-js/*.test.js",
+    "check": "node --check plugins/index.js && node --check plugins/literature.js && node --check plugins/plot.js && node --check plugins/report.js"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "research",
+    "literature",
+    "scientific-plotting",
+    "report"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.19",
+    "dsh": ">=0.2.2-rc.2 <0.3.0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "~4.1.0",
+    "@deepseek-ai/dsh-tools": "0.2.2-rc.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CYZice/gibbs-research-plugins.git"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "4.1.0",
+    "@deepseek-ai/dsh-tools": "0.2.2-rc.2",
+    "@deepseek-ai/dsh-tool-executor-native": "0.2.2-rc.2",
+    "@deepseek-ai/dsh-system-prompt": "0.2.2-rc.2"
+  }
+}

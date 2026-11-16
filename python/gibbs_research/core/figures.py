@@ -13,6 +13,10 @@ figures render concurrently.
 
 from __future__ import annotations
 
+from contextvars import ContextVar
+
+_RENDER_OPTIONS = ContextVar("render_options", default={})
+
 import base64
 import io
 import os
@@ -41,6 +45,8 @@ _FIGSIZE = (6.6, 4.1)
 # the HTML, so most figure text is Latin/math anyway.
 _FONTS_DIR = os.path.join(os.path.dirname(__file__), "assets", "fonts")
 _CJK_CANDIDATES = [
+    r"C:\Windows\Fonts\msyh.ttc",
+    r"C:\Windows\Fonts\simhei.ttf",
     os.path.join(_FONTS_DIR, "NotoSansCJKsc-Regular.otf"),
     os.path.join(_FONTS_DIR, "SourceHanSansSC-Regular.otf"),
     "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
@@ -64,7 +70,7 @@ _CJK_NAME = _register_cjk()
 
 
 def _new_axes():
-    fig = Figure(figsize=_FIGSIZE, dpi=_DPI)
+    fig = Figure(figsize=_RENDER_OPTIONS.get().get("style", {}).get("figsize", _FIGSIZE), dpi=_DPI)
     FigureCanvasAgg(fig)
     ax = fig.add_subplot(111)
     family = [_CJK_NAME] if _CJK_NAME else []
@@ -84,8 +90,9 @@ def _new_axes():
 
 
 def _color(i: int, explicit: Optional[int] = None) -> str:
+    colors = _RENDER_OPTIONS.get().get("style", {}).get("colors") or OKABE_ITO
     idx = explicit if explicit is not None else i
-    return OKABE_ITO[idx % len(OKABE_ITO)]
+    return colors[idx % len(colors)]
 
 
 def _axis_label(symbol: Any, unit: Any) -> str:
@@ -121,8 +128,18 @@ def _finish(fig, ax) -> bytes:
     labels = ax.get_legend_handles_labels()[1]
     if labels:
         ax.legend(frameon=False, fontsize=9, prop={"family": getattr(ax, "_gibbs_family", None)})
+    options = _RENDER_OPTIONS.get()
+    style = options.get("style", {})
+    if options.get("title"):
+        ax.set_title(options["title"], fontfamily=getattr(ax, "_gibbs_family", None))
+    for label in [ax.xaxis.label, ax.yaxis.label, ax.title]:
+        label.set_fontsize(style.get("font_size", 12))
+    if "grid" in style:
+        ax.grid(bool(style["grid"]))
+    if ax.get_legend() is not None and style.get("legend_location"):
+        ax.legend(loc=style["legend_location"], frameon=False, prop={"family": getattr(ax, "_gibbs_family", None)})
     buf = io.BytesIO()
-    fig.savefig(buf, format="png", dpi=_DPI, bbox_inches="tight")
+    fig.savefig(buf, format=options.get("format", "png"), dpi=_DPI, bbox_inches="tight")
     buf.seek(0)
     data = buf.getvalue()
     fig.clf()
@@ -133,6 +150,13 @@ def render_line(chart: Dict[str, Any]) -> bytes:
     fig, ax = _new_axes()
     series = chart.get("series") or []
     is_area = chart.get("type") == "stacked_area"
+    if is_area and series:
+        points = [_pairs(s.get("data")) for s in series]
+        ax.stackplot([p[0] for p in points[0]], *[[p[1] for p in item] for item in points],
+                     labels=[s.get("name") or f"系列{i + 1}" for i, s in enumerate(series)],
+                     colors=[_color(i, s.get("colorIndex")) for i, s in enumerate(series)], alpha=0.65)
+        _set_labels(ax, chart)
+        return _finish(fig, ax)
     if series:
         for i, s in enumerate(series):
             pts = _pairs(s.get("data"))
@@ -194,9 +218,11 @@ def render_scatter(chart: Dict[str, Any]) -> bytes:
     fig, ax = _new_axes()
     series = chart.get("series") or []
     pts = _pairs(series[0].get("data")) if series else _pairs(chart.get("data"))
-    if pts:
-        xs, ys = zip(*pts)
-        ax.scatter(xs, ys, color=_color(0), s=36, zorder=3)
+    for i, item in enumerate(series or [{"data": chart.get("data")} ]):
+        data = _pairs(item.get("data"))
+        if data:
+            xs, ys = zip(*data)
+            ax.scatter(xs, ys, color=_color(i, item.get("colorIndex")), label=item.get("name"), s=36, zorder=3)
     fit = chart.get("fit") or {}
     if isinstance(fit.get("slope"), (int, float)) and isinstance(fit.get("intercept"), (int, float)) and pts:
         xs = [p[0] for p in pts]
@@ -215,10 +241,12 @@ def render_nyquist(chart: Dict[str, Any]) -> bytes:
     fig, ax = _new_axes()
     series = chart.get("series") or []
     pts = _pairs(series[0].get("data")) if series else _pairs(chart.get("data"))
-    if pts:
-        xs, ys = zip(*pts)
-        ax.plot(xs, ys, color=_color(0), marker="o", markersize=4, linewidth=1.4)
-        ax.set_aspect("equal", adjustable="datalim")
+    for i, item in enumerate(series or [{"data": chart.get("data")} ]):
+        data = _pairs(item.get("data"))
+        if data:
+            xs, ys = zip(*data)
+            ax.plot(xs, ys, color=_color(i, item.get("colorIndex")), label=item.get("name"), marker="o", markersize=4, linewidth=1.4)
+    ax.set_aspect("equal", adjustable="datalim")
     _set_labels(ax, chart)
     return _finish(fig, ax)
 
@@ -259,22 +287,20 @@ _DISPATCH = {
 }
 
 
-def render_figure(chart: Dict[str, Any]) -> Optional[bytes]:
-    """Render a figure spec to PNG bytes, or None if not renderable here.
-
-    ``table`` blocks are laid out as HTML; ``structure`` figures embed a
-    pre-captured PNG (``content.image``) when present, else None.
-    """
+def render_figure(chart: Dict[str, Any], *, output_format: str = "png") -> Optional[bytes]:
+    """Render a chart spec, preserving the original data and vector output."""
     if not isinstance(chart, dict):
-        return None
-    ctype = str(chart.get("type") or "line")
-    fn = _DISPATCH.get(ctype)
+        raise ValueError("Chart must be an object")
+    if output_format not in {"png", "svg", "pdf"}:
+        raise ValueError("Unsupported figure format")
+    fn = _DISPATCH.get(str(chart.get("type") or "line"))
     if fn is None:
-        return None
+        raise ValueError("Unsupported chart type")
+    token = _RENDER_OPTIONS.set({"format": output_format, "style": chart.get("style", {}), "title": chart.get("title", "")})
     try:
         return fn(chart)
-    except Exception:
-        return None
+    finally:
+        _RENDER_OPTIONS.reset(token)
 
 
 def render_figure_data_uri(chart: Dict[str, Any]) -> Optional[str]:

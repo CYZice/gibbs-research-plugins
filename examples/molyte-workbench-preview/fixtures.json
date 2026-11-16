@@ -1,0 +1,489 @@
+{
+  "papers": [
+    {
+      "paper_id": "attention",
+      "title": "Attention Is All You Need",
+      "year": 2017,
+      "venue": "NeurIPS",
+      "arxiv_id": "1706.03762",
+      "doi": null,
+      "authors": [
+        {
+          "name": "Ashish Vaswani"
+        },
+        {
+          "name": "Noam Shazeer"
+        },
+        {
+          "name": "Niki Parmar"
+        },
+        {
+          "name": "Jakob Uszkoreit"
+        },
+        {
+          "name": "Llion Jones"
+        }
+      ],
+      "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English- to-German translation task, improving over the existing best results, including ensembles, by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.",
+      "open_access": true,
+      "source_url": "https://arxiv.org/abs/1706.03762",
+      "capabilities": {
+        "has_fulltext": true,
+        "can_read_content": true,
+        "can_search_evidence": true,
+        "can_download_pdf": true,
+        "has_assets": true,
+        "ai_ready": true
+      },
+      "processing_status": {
+        "fulltext": "ready",
+        "parse": "ready",
+        "evidence": "ready",
+        "embedding": "ready",
+        "multimodal": "ready"
+      }
+    },
+    {
+      "paper_id": "bert",
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "year": 2019,
+      "venue": "NAACL-HLT",
+      "arxiv_id": "1810.04805",
+      "doi": null,
+      "authors": [
+        {
+          "name": "Jacob Devlin"
+        },
+        {
+          "name": "Ming-Wei Chang"
+        },
+        {
+          "name": "Kenton Lee"
+        },
+        {
+          "name": "Kristina Toutanova"
+        }
+      ],
+      "abstract": "We introduce a new language representa- tion model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language repre- sentation models (Peters et al., 2018a; Rad- ford et al., 2018), BERT is designed to pre- train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a re- sult, the pre-trained BERT model can be ﬁne- tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task- speciﬁc architecture modiﬁcations. BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art re- sults on eleven natural language processing tasks, including pushing the GLUE score to 80.5% (7.7% point absolute improvement), MultiNLI accuracy to 86.7% (4.6% absolute improvement), SQuAD v1.1 question answer- ing Test F1 to 93.2 (1.5 point absolute im- provement) and SQuAD v2.0 Test F1 to 83.1 (5.1 point absolute improvement).",
+      "open_access": true,
+      "source_url": "https://arxiv.org/abs/1810.04805",
+      "capabilities": {
+        "has_fulltext": true,
+        "can_read_content": true,
+        "can_search_evidence": true,
+        "can_download_pdf": true,
+        "has_assets": true,
+        "ai_ready": true
+      },
+      "processing_status": {
+        "fulltext": "ready",
+        "parse": "ready",
+        "evidence": "ready",
+        "embedding": "ready",
+        "multimodal": "ready"
+      }
+    },
+    {
+      "paper_id": "rag",
+      "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+      "year": 2020,
+      "venue": "NeurIPS",
+      "arxiv_id": "2005.11401",
+      "doi": null,
+      "authors": [
+        {
+          "name": "Patrick Lewis"
+        },
+        {
+          "name": "Ethan Perez"
+        },
+        {
+          "name": "Aleksandra Piktus"
+        },
+        {
+          "name": "Fabio Petroni"
+        }
+      ],
+      "abstract": "Large pre-trained language models have been shown to store factual knowledge in their parameters, and achieve state-of-the-art results when ﬁne-tuned on down- stream NLP tasks. However, their ability to access and precisely manipulate knowl- edge is still limited, and hence on knowledge-intensive tasks, their performance lags behind task-speciﬁc architectures. Additionally, providing provenance for their decisions and updating their world knowledge remain open research problems. Pre- trained models with a differentiable access mechanism to explicit non-parametric memory have so far been only investigated for extractive downstream tasks. We explore a general-purpose ﬁne-tuning recipe for retrieval-augmented generation (RAG) — models which combine pre-trained parametric and non-parametric mem- ory for language generation. We introduce RAG models where the parametric memory is a pre-trained seq2seq model and the non-parametric memory is a dense vector index of Wikipedia, accessed with a pre-trained neural retriever. We com- pare two RAG formulations, one which conditions on the same retrieved passages across the whole generated sequence, and another which can use different passages per token. We ﬁne-tune and evaluate our models on a wide range of knowledge- intensive NLP tasks and set the state of the art on three open domain QA tasks, outperforming parametric seq2seq models and task-speciﬁc retrieve-and-extract architectures. For language generation tasks, we ﬁnd that RAG models generate more speciﬁc, diverse and factual language than a state-of-the-art parametric-only seq2seq baseline.",
+      "open_access": true,
+      "source_url": "https://arxiv.org/abs/2005.11401",
+      "capabilities": {
+        "has_fulltext": true,
+        "can_read_content": true,
+        "can_search_evidence": true,
+        "can_download_pdf": true,
+        "has_assets": true,
+        "ai_ready": true
+      },
+      "processing_status": {
+        "fulltext": "ready",
+        "parse": "ready",
+        "evidence": "ready",
+        "embedding": "ready",
+        "multimodal": "ready"
+      }
+    },
+    {
+      "paper_id": "lora",
+      "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+      "year": 2022,
+      "venue": "ICLR",
+      "arxiv_id": "2106.09685",
+      "doi": null,
+      "authors": [
+        {
+          "name": "Edward J. Hu"
+        },
+        {
+          "name": "Yelong Shen"
+        },
+        {
+          "name": "Phillip Wallis"
+        },
+        {
+          "name": "Zeyuan Allen-Zhu"
+        }
+      ],
+      "abstract": "LORA: LOW-RANK ADAPTATION OF LARGE LAN- GUAGE MODELS Edward Hu∗ Yelong Shen∗ Phillip Wallis Zeyuan Allen-Zhu Yuanzhi Li Shean Wang Lu Wang Weizhu Chen Microsoft Corporation {edwardhu, yeshe, phwallis, zeyuana, yuanzhil, swang, luw, wzchen}@microsoft.com yuanzhil@andrew.cmu.edu (Version 2) ABSTRACT An important paradigm of natural language processing consists of large-scale pre- training on general domain data and adaptation to particular tasks or domains. As we pre-train larger models, full ﬁne-tuning, which retrains all model parameters, becomes less feasible. Using GPT-3 175B as an example – deploying indepen- dent instances of ﬁne-tuned models, each with 175B parameters, is prohibitively expensive. We propose Low-Rank Adaptation, or LoRA, which freezes the pre- trained model weights and injects trainable rank decomposition matrices into each layer of the Transformer architecture, greatly reducing the number of trainable pa- rameters for downstream tasks. Compared to GPT-3 175B ﬁne-tuned with Adam, LoRA can reduce the number of trainable parameters by 10,000 times and the GPU memory requirement by 3 times. LoRA performs on-par or better than ﬁne- tuning in model quality on RoBERTa, DeBERTa, GPT-2, and GPT-3, despite hav- ing fewer trainable parameters, a higher training throughput, and, unlike adapters, no additional inference latency. We also provide an empirical investigation into rank-deﬁciency in language model adaptation, which sheds light on the efﬁcacy of LoRA. We release a package that facilitates the integration of LoRA with PyTorch models and provide our implementations and model checkpoints for RoBERTa, DeBERTa, and GPT-2 at https://github.com/microsoft/LoRA.",
+      "open_access": true,
+      "source_url": "https://arxiv.org/abs/2106.09685",
+      "capabilities": {
+        "has_fulltext": true,
+        "can_read_content": true,
+        "can_search_evidence": true,
+        "can_download_pdf": true,
+        "has_assets": true,
+        "ai_ready": true
+      },
+      "processing_status": {
+        "fulltext": "ready",
+        "parse": "ready",
+        "evidence": "ready",
+        "embedding": "ready",
+        "multimodal": "ready"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "attention-e1",
+      "representation": {
+        "representation_id": "attention-paragraph-1",
+        "type": "paragraph"
+      },
+      "paper": {
+        "paper_id": "attention",
+        "title": "Attention Is All You Need",
+        "year": 2017,
+        "doi": null,
+        "venue": "NeurIPS"
+      },
+      "content": {
+        "snippet": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English- to-German translation task, improving over the existing best results, including ensembles, by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.",
+        "quote": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English- to-German translation task, improving over the existing best results, including ensembles, by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.",
+        "quote_language": "en"
+      },
+      "location": {
+        "page": 1,
+        "bbox": [
+          0.23457027260774102,
+          0.5218867292307844,
+          0.7676260954414318,
+          0.727397803104285
+        ],
+        "coordinate_space": "normalized",
+        "section_title": "We propose a new simple network architecture"
+      },
+      "modality": "text",
+      "score": 0.96
+    },
+    {
+      "evidence_id": "attention-e2",
+      "representation": {
+        "representation_id": "attention-paragraph-2",
+        "type": "paragraph"
+      },
+      "paper": {
+        "paper_id": "attention",
+        "title": "Attention Is All You Need",
+        "year": 2017,
+        "doi": null,
+        "venue": "NeurIPS"
+      },
+      "content": {
+        "snippet": "Scaled Dot-Product Attention",
+        "quote": "Scaled Dot-Product Attention",
+        "quote_language": "en"
+      },
+      "location": {
+        "page": 4,
+        "bbox": [
+          0.24147549797506893,
+          0.08989833099673493,
+          0.4349973591324551,
+          0.10247737229472459
+        ],
+        "coordinate_space": "normalized",
+        "section_title": "Scaled Dot-Product Attention"
+      },
+      "modality": "text",
+      "score": 0.94
+    },
+    {
+      "evidence_id": "attention-e3",
+      "representation": {
+        "representation_id": "attention-paragraph-3",
+        "type": "paragraph"
+      },
+      "paper": {
+        "paper_id": "attention",
+        "title": "Attention Is All You Need",
+        "year": 2017,
+        "doi": null,
+        "venue": "NeurIPS"
+      },
+      "content": {
+        "snippet": "The goal of reducing sequential computation also forms the foundation of the Extended Neural GPU [16], ByteNet [18] and ConvS2S [9], all of which use convolutional neural networks as basic building block, computing hidden representations in parallel for all input and output positions. In these models, the number of operations required to relate signals from two arbitrary input or output positions grows in the distance between positions, linearly for ConvS2S and logarithmically for ByteNet. This makes it more difficult to learn dependencies between distant positions [12]. In the Transformer this is reduced to a constant number of operations, albeit at the cost of reduced effective resolution due to averaging attention-weighted positions, an effect we counteract with Multi-Head Attention as described in section 3.2.",
+        "quote": "The goal of reducing sequential computation also forms the foundation of the Extended Neural GPU [16], ByteNet [18] and ConvS2S [9], all of which use convolutional neural networks as basic building block, computing hidden representations in parallel for all input and output positions. In these models, the number of operations required to relate signals from two arbitrary input or output positions grows in the distance between positions, linearly for ConvS2S and logarithmically for ByteNet. This makes it more difficult to learn dependencies between distant positions [12]. In the Transformer this is reduced to a constant number of operations, albeit at the cost of reduced effective resolution due to averaging attention-weighted positions, an effect we counteract with Multi-Head Attention as described in section 3.2.",
+        "quote_language": "en"
+      },
+      "location": {
+        "page": 2,
+        "bbox": [
+          0.1759656893661599,
+          0.4917284647623698,
+          0.8255578832688675,
+          0.6144432684387824
+        ],
+        "coordinate_space": "normalized",
+        "section_title": "Multi-Head Attention"
+      },
+      "modality": "text",
+      "score": 0.9199999999999999
+    },
+    {
+      "evidence_id": "bert-e2",
+      "representation": {
+        "representation_id": "bert-paragraph-2",
+        "type": "paragraph"
+      },
+      "paper": {
+        "paper_id": "bert",
+        "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+        "year": 2019,
+        "doi": null,
+        "venue": "NAACL-HLT"
+      },
+      "content": {
+        "snippet": "Task #1: Masked LM Intuitively, it is reason- able to believe that a deep bidirectional model is strictly more powerful than either a left-to-right model or the shallow concatenation of a left-to- right and a right-to-left model. Unfortunately, standard conditional language models can only be trained left-to-right or right-to-left, since bidirec- tional conditioning would allow each word to in- directly “see itself”, and the model could trivially predict the target word in a multi-layered context.",
+        "quote": "Task #1: Masked LM Intuitively, it is reason- able to believe that a deep bidirectional model is strictly more powerful than either a left-to-right model or the shallow concatenation of a left-to- right and a right-to-left model. Unfortunately, standard conditional language models can only be trained left-to-right or right-to-left, since bidirec- tional conditioning would allow each word to in- directly “see itself”, and the model could trivially predict the target word in a multi-layered context.",
+        "quote_language": "en"
+      },
+      "location": {
+        "page": 4,
+        "bbox": [
+          0.1209522719261208,
+          0.7039462571064136,
+          0.4876237080644503,
+          0.8618654867508134
+        ],
+        "coordinate_space": "normalized",
+        "section_title": "Masked LM"
+      },
+      "modality": "text",
+      "score": 0.94
+    },
+    {
+      "evidence_id": "bert-e3",
+      "representation": {
+        "representation_id": "bert-paragraph-3",
+        "type": "paragraph"
+      },
+      "paper": {
+        "paper_id": "bert",
+        "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+        "year": 2019,
+        "doi": null,
+        "venue": "NAACL-HLT"
+      },
+      "content": {
+        "snippet": "word based only on its context. Unlike left-to- right language model pre-training, the MLM ob- jective enables the representation to fuse the left and the right context, which allows us to pre- train a deep bidirectional Transformer. In addi- tion to the masked language model, we also use a “next sentence prediction” task that jointly pre- trains text-pair representations. The contributions of our paper are as follows:",
+        "quote": "word based only on its context. Unlike left-to- right language model pre-training, the MLM ob- jective enables the representation to fuse the left and the right context, which allows us to pre- train a deep bidirectional Transformer. In addi- tion to the masked language model, we also use a “next sentence prediction” task that jointly pre- trains text-pair representations. The contributions of our paper are as follows:",
+        "quote_language": "en"
+      },
+      "location": {
+        "page": 2,
+        "bbox": [
+          0.12095229755925406,
+          0.07779363304205175,
+          0.48762140108245644,
+          0.21950234117077824
+        ],
+        "coordinate_space": "normalized",
+        "section_title": "Next Sentence Prediction"
+      },
+      "modality": "text",
+      "score": 0.9199999999999999
+    },
+    {
+      "evidence_id": "rag-e2",
+      "representation": {
+        "representation_id": "rag-paragraph-2",
+        "type": "paragraph"
+      },
+      "paper": {
+        "paper_id": "rag",
+        "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+        "year": 2020,
+        "doi": null,
+        "venue": "NeurIPS"
+      },
+      "content": {
+        "snippet": "We endow pre-trained, parametric-memory generation models with a non-parametric memory through a general-purpose ﬁne-tuning approach which we refer to as retrieval-augmented generation (RAG). We build RAG models where the parametric memory is a pre-trained seq2seq transformer, and the non-parametric memory is a dense vector index of Wikipedia, accessed with a pre-trained neural retriever. We combine these components in a probabilistic model trained end-to-end (Fig. 1). The retriever (Dense Passage Retriever [26], henceforth DPR) provides latent documents conditioned on the input, and the seq2seq model (BART [32]) then conditions on these latent documents together with the input to generate the output. We marginalize the latent documents with a top-K approximation, either on a per-output basis (assuming the same document is responsible for all tokens) or a per-token basis (where different documents are responsible for different tokens). Like T5 [51] or BART, RAG can be ﬁne-tuned on any seq2seq task, whereby both the generator and retriever are jointly learned.",
+        "quote": "We endow pre-trained, parametric-memory generation models with a non-parametric memory through a general-purpose ﬁne-tuning approach which we refer to as retrieval-augmented generation (RAG). We build RAG models where the parametric memory is a pre-trained seq2seq transformer, and the non-parametric memory is a dense vector index of Wikipedia, accessed with a pre-trained neural retriever. We combine these components in a probabilistic model trained end-to-end (Fig. 1). The retriever (Dense Passage Retriever [26], henceforth DPR) provides latent documents conditioned on the input, and the seq2seq model (BART [32]) then conditions on these latent documents together with the input to generate the output. We marginalize the latent documents with a top-K approximation, either on a per-output basis (assuming the same document is responsible for all tokens) or a per-token basis (where different documents are responsible for different tokens). Like T5 [51] or BART, RAG can be ﬁne-tuned on any seq2seq task, whereby both the generator and retriever are jointly learned.",
+        "quote_language": "en"
+      },
+      "location": {
+        "page": 2,
+        "bbox": [
+          0.17570587856317657,
+          0.35951190524631077,
+          0.8263842015484579,
+          0.5097361863261521
+        ],
+        "coordinate_space": "normalized",
+        "section_title": "Dense Passage Retriever"
+      },
+      "modality": "text",
+      "score": 0.94
+    },
+    {
+      "evidence_id": "rag-e3",
+      "representation": {
+        "representation_id": "rag-paragraph-3",
+        "type": "paragraph"
+      },
+      "paper": {
+        "paper_id": "rag",
+        "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+        "year": 2020,
+        "doi": null,
+        "venue": "NeurIPS"
+      },
+      "content": {
+        "snippet": "RAG-Sequence Model The RAG-Sequence model uses the same retrieved document to generate the complete sequence. Technically, it treats the retrieved document as a single latent variable that is marginalized to get the seq2seq probability p(y|x) via a top-K approximation. Concretely, the top K documents are retrieved using the retriever, and the generator produces the output sequence probability for each document, which are then marginalized,",
+        "quote": "RAG-Sequence Model The RAG-Sequence model uses the same retrieved document to generate the complete sequence. Technically, it treats the retrieved document as a single latent variable that is marginalized to get the seq2seq probability p(y|x) via a top-K approximation. Concretely, the top K documents are retrieved using the retriever, and the generator produces the output sequence probability for each document, which are then marginalized,",
+        "quote_language": "en"
+      },
+      "location": {
+        "page": 3,
+        "bbox": [
+          0.17647058823529413,
+          0.2527064313792219,
+          0.8235288632461448,
+          0.32049757061582623
+        ],
+        "coordinate_space": "normalized",
+        "section_title": "RAG-Sequence Model"
+      },
+      "modality": "text",
+      "score": 0.9199999999999999
+    },
+    {
+      "evidence_id": "lora-e1",
+      "representation": {
+        "representation_id": "lora-paragraph-1",
+        "type": "paragraph"
+      },
+      "paper": {
+        "paper_id": "lora",
+        "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+        "year": 2022,
+        "doi": null,
+        "venue": "ICLR"
+      },
+      "content": {
+        "snippet": "An important paradigm of natural language processing consists of large-scale pre- training on general domain data and adaptation to particular tasks or domains. As we pre-train larger models, full ﬁne-tuning, which retrains all model parameters, becomes less feasible. Using GPT-3 175B as an example – deploying indepen- dent instances of ﬁne-tuned models, each with 175B parameters, is prohibitively expensive. We propose Low-Rank Adaptation, or LoRA, which freezes the pre- trained model weights and injects trainable rank decomposition matrices into each layer of the Transformer architecture, greatly reducing the number of trainable pa- rameters for downstream tasks. Compared to GPT-3 175B ﬁne-tuned with Adam, LoRA can reduce the number of trainable parameters by 10,000 times and the GPU memory requirement by 3 times. LoRA performs on-par or better than ﬁne- tuning in model quality on RoBERTa, DeBERTa, GPT-2, and GPT-3, despite hav- ing fewer trainable parameters, a higher training throughput, and, unlike adapters, no additional inference latency. We also provide an empirical investigation into rank-deﬁciency in language model adaptation, which sheds light on the efﬁcacy of LoRA. We release a package that facilitates the integration of LoRA with PyTorch models and provide our implementations and model checkpoints for RoBERTa, DeBERTa, and GPT-2 at https://github.com/microsoft/LoRA.",
+        "quote": "An important paradigm of natural language processing consists of large-scale pre- training on general domain data and adaptation to particular tasks or domains. As we pre-train larger models, full ﬁne-tuning, which retrains all model parameters, becomes less feasible. Using GPT-3 175B as an example – deploying indepen- dent instances of ﬁne-tuned models, each with 175B parameters, is prohibitively expensive. We propose Low-Rank Adaptation, or LoRA, which freezes the pre- trained model weights and injects trainable rank decomposition matrices into each layer of the Transformer architecture, greatly reducing the number of trainable pa- rameters for downstream tasks. Compared to GPT-3 175B ﬁne-tuned with Adam, LoRA can reduce the number of trainable parameters by 10,000 times and the GPU memory requirement by 3 times. LoRA performs on-par or better than ﬁne- tuning in model quality on RoBERTa, DeBERTa, GPT-2, and GPT-3, despite hav- ing fewer trainable parameters, a higher training throughput, and, unlike adapters, no additional inference latency. We also provide an empirical investigation into rank-deﬁciency in language model adaptation, which sheds light on the efﬁcacy of LoRA. We release a package that facilitates the integration of LoRA with PyTorch models and provide our implementations and model checkpoints for RoBERTa, DeBERTa, and GPT-2 at https://github.com/microsoft/LoRA.",
+        "quote_language": "en"
+      },
+      "location": {
+        "page": 1,
+        "bbox": [
+          0.23507505927989686,
+          0.3375143956656408,
+          0.7649324703839869,
+          0.5853229484172783
+        ],
+        "coordinate_space": "normalized",
+        "section_title": "We propose Low-Rank Adaptation"
+      },
+      "modality": "text",
+      "score": 0.96
+    },
+    {
+      "evidence_id": "lora-e2",
+      "representation": {
+        "representation_id": "lora-paragraph-2",
+        "type": "paragraph"
+      },
+      "paper": {
+        "paper_id": "lora",
+        "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+        "year": 2022,
+        "doi": null,
+        "venue": "ICLR"
+      },
+      "content": {
+        "snippet": "We take inspiration from Li et al. (2018a); Aghajanyan et al. (2020) which show that the learned over-parametrized models in fact reside on a low intrinsic dimension. We hypothesize that the change in weights during model adaptation also has a low “intrinsic rank”, leading to our proposed Low-Rank Adaptation (LoRA) approach. LoRA allows us to train some dense layers in a neural network indirectly by optimizing rank decomposition matrices of the dense layers’ change during adaptation instead, while keeping the pre-trained weights frozen, as shown in Figure 1. Using GPT-3 175B as an example, we show that a very low rank (i.e., r in Figure 1 can be one or two) sufﬁces even when the full rank (i.e., d) is as high as 12,288, making LoRA both storage- and compute-efﬁcient.",
+        "quote": "We take inspiration from Li et al. (2018a); Aghajanyan et al. (2020) which show that the learned over-parametrized models in fact reside on a low intrinsic dimension. We hypothesize that the change in weights during model adaptation also has a low “intrinsic rank”, leading to our proposed Low-Rank Adaptation (LoRA) approach. LoRA allows us to train some dense layers in a neural network indirectly by optimizing rank decomposition matrices of the dense layers’ change during adaptation instead, while keeping the pre-trained weights frozen, as shown in Figure 1. Using GPT-3 175B as an example, we show that a very low rank (i.e., r in Figure 1 can be one or two) sufﬁces even when the full rank (i.e., d) is as high as 12,288, making LoRA both storage- and compute-efﬁcient.",
+        "quote_language": "en"
+      },
+      "location": {
+        "page": 2,
+        "bbox": [
+          0.1764705383699704,
+          0.1692959756562204,
+          0.8235360438527625,
+          0.2787334943058515
+        ],
+        "coordinate_space": "normalized",
+        "section_title": "rank decomposition"
+      },
+      "modality": "text",
+      "score": 0.94
+    },
+    {
+      "evidence_id": "lora-e3",
+      "representation": {
+        "representation_id": "lora-paragraph-3",
+        "type": "paragraph"
+      },
+      "paper": {
+        "paper_id": "lora",
+        "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+        "year": 2022,
+        "doi": null,
+        "venue": "ICLR"
+      },
+      "content": {
+        "snippet": "Directly Optimizing the Prompt is Hard The other direction, as exempliﬁed by preﬁx tuning (Li & Liang, 2021), faces a different challenge. We observe that preﬁx tuning is difﬁcult to optimize and that its performance changes non-monotonically in trainable parameters, conﬁrming similar observations in the original paper. More fundamentally, reserving a part of the sequence length for adaptation necessarily reduces the sequence length available to process a downstream task, which we suspect makes tuning the prompt less performant compared to other methods. We defer the study on task performance to Section 5.",
+        "quote": "Directly Optimizing the Prompt is Hard The other direction, as exempliﬁed by preﬁx tuning (Li & Liang, 2021), faces a different challenge. We observe that preﬁx tuning is difﬁcult to optimize and that its performance changes non-monotonically in trainable parameters, conﬁrming similar observations in the original paper. More fundamentally, reserving a part of the sequence length for adaptation necessarily reduces the sequence length available to process a downstream task, which we suspect makes tuning the prompt less performant compared to other methods. We defer the study on task performance to Section 5.",
+        "quote_language": "en"
+      },
+      "location": {
+        "page": 3,
+        "bbox": [
+          0.17647061316795598,
+          0.8288652824633049,
+          0.8235348969503166,
+          0.9245818937667692
+        ],
+        "coordinate_space": "normalized",
+        "section_title": "trainable parameters"
+      },
+      "modality": "text",
+      "score": 0.9199999999999999
+    }
+  ]
+}

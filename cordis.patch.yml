@@ -1,0 +1,7 @@
+- insert:
+    - id: gibbs-literature
+      name: dsh-gibbs-research/literature
+    - id: gibbs-plot
+      name: dsh-gibbs-research/plot
+    - id: gibbs-report
+      name: dsh-gibbs-research/report

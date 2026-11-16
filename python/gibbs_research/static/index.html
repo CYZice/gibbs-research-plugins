@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>科研工作台</title><link rel="stylesheet" href="/static/style.css"></head>
+<body><main>
+<aside aria-label="研究产物">
+  <div class="sidebar-tools"><span>产物</span><button id="new" class="icon-button" data-icon="plus" title="新建图表" aria-label="新建图表"></button></div>
+  <nav id="artifacts" aria-label="产物列表"></nav>
+  <div class="sidebar-footer"><button id="login" class="icon-button" data-icon="key" title="连接服务" aria-label="连接服务"></button></div>
+</aside>
+<section class="workbench">
+  <div class="toolbar"><h1 id="title">新图表</h1><div class="toolbar-actions">
+    <select id="history" aria-label="选择历史版本" hidden></select>
+    <button id="compare" class="icon-button" data-icon="compare" title="对比上一版" aria-label="对比上一版" aria-pressed="false" hidden></button>
+    <details id="download" class="download" hidden><summary class="icon-button" title="导出" aria-label="导出"><span data-icon="download"></span></summary><div id="exports" class="export-menu" role="group" aria-label="导出格式"></div></details>
+  </div></div>
+  <div class="workspace-grid">
+    <section id="preview" class="preview" aria-label="预览"></section>
+    <section class="inspector" aria-label="编辑">
+      <div id="plot-controls" class="plot-controls">
+        <label class="compact-field" title="字号"><span data-icon="type"></span><span class="sr-only">字号</span><input id="font-size" type="number" min="6" max="40" value="12" aria-label="字号"></label>
+        <label class="compact-field" title="图例位置"><span data-icon="legend"></span><span class="sr-only">图例位置</span><select id="legend" aria-label="图例位置"><option value="best">自动</option><option value="upper left">左上</option><option value="upper right">右上</option><option value="lower left">左下</option><option value="lower right">右下</option><option value="right">右侧</option><option value="center left">左中</option><option value="center right">右中</option><option value="lower center">底部</option><option value="upper center">顶部</option><option value="center">居中</option></select></label>
+      </div>
+      <details id="source-editor" class="source-editor"><summary title="编辑 JSON" aria-label="编辑 JSON"><span data-icon="code"></span><span class="summary-chevron" data-icon="chevron"></span></summary><label for="editor" class="sr-only">编辑图表或报告材料</label><textarea id="editor" spellcheck="false"></textarea></details>
+      <div class="feedback-composer"><label for="feedback" class="sr-only">修改意见</label><textarea id="feedback" rows="4" placeholder="修改意见…"></textarea><div class="actions"><button id="save" class="icon-button primary" data-icon="refresh" title="保存并重画" aria-label="保存并重画"></button><button id="send" class="icon-button" data-icon="send" title="交给 Agent 修改" aria-label="交给 Agent 修改" disabled></button></div></div>
+      <p id="status" role="status" aria-live="polite"></p>
+    </section>
+  </div>
+</section></main><script type="module" src="/static/app.js"></script></body></html>

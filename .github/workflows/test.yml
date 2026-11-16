@@ -1,0 +1,59 @@
+name: test
+on: [push, pull_request]
+jobs:
+  tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: pip install -e '.[dev]'
+      - run: python -m playwright install --with-deps chromium
+      - run: GIBBS_TEST_PDF=1 GIBBS_TEST_UI=1 pytest tests -q
+      - run: npm ci --ignore-scripts
+      - run: |
+          python -m gibbs_research.cli > /tmp/gibbs-tools.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:8766/health && break; sleep 1; done
+          GIBBS_TEST_URL=http://127.0.0.1:8766 npm test
+      - run: npm audit --audit-level=high
+      - run: npm pack --dry-run
+  literature:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/literature-kb/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e '.[dev]'
+      - run: pytest -q -m 'not integration'
+  literature-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/literature-kb/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: services/literature-kb/frontend/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - run: npm audit --audit-level=high
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e '.[dev]'
+        working-directory: .
+      - run: python -m playwright install --with-deps chromium
+      - run: GIBBS_TEST_LIBRARY_UI=1 pytest tests/test_literature_workbench_ui.py -q
+        working-directory: .

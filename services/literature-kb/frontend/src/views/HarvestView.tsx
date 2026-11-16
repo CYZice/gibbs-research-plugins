@@ -267,7 +267,7 @@ export default function HarvestView({ base, token }: Props) {
 
   return <section className="page harvest-page">
     <header className="harvest-heading">
-      <div><p className="eyebrow">OPENALEX CORPUS HARVEST</p><h2>批量采集</h2><p>先暂存 PDF 与完整元数据，再按批次送入解析、向量化和索引流水线。</p></div>
+      <h2>批量采集</h2>
       <button className="secondary" onClick={loadJobs}>刷新任务</button>
     </header>
     <div className="harvest-notice">{notice}</div>

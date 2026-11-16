@@ -19,7 +19,7 @@ from typing import Any, Dict, List
 
 from jinja2 import Template
 
-from app.services.report_engine import figures
+from . import figures
 
 
 class WeasyPrintUnavailable(RuntimeError):
